@@ -1,0 +1,15 @@
+[package]
+name = "e57-python"
+version = "0.1.0-alpha"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "e57"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = "0.18.3"
+e57 = "0.5.0"
+anyhow = "1"
+eyre = "0.6.8"
