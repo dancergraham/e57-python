@@ -4,7 +4,12 @@ build-backend = "maturin"
 
 [project]
 name = "e57"
+description = "E57 is a compact, non-proprietary point cloud format that's defined by the ASTM E2807 standard. This format is widely adopted by 3D design applications."
+authors = [
+    { name = "Graham Knapp", email = "graham.knapp@gmail.com" }
+]
 requires-python = ">=3.7"
+keywords = ["pointcloud"]
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
