@@ -8,3 +8,7 @@ This python library wraps the [rust e57 library](https://github.com/cry-inc/e57)
 - [ ] Read e57 to python dict
 - [ ] Read e57 to numpy array
 - [ ] Write to e57 (format ?)
+
+## Testing
+
+`python -m pytest`
