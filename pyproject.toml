@@ -6,7 +6,7 @@ build-backend = "maturin"
 name = "e57"
 dependencies = [
     'pytest',
-    'numpy',
+    'numpy==1.25.1',
 ]
 description = "Read e57 files to Python. E57 is a compact, non-proprietary point cloud format that's defined by the ASTM E2807 standard. This format is widely adopted by 3D design applications."
 authors = [
