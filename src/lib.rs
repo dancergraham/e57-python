@@ -15,7 +15,11 @@ fn raw_xml(filepath: &str) -> PyResult<String> {
     let xml = E57Reader::raw_xml(reader);
     let xml = match &xml {
         Ok(_) => xml,
-        Err(e) => return Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string())),
+        Err(e) => {
+            return Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(
+                e.to_string(),
+            ))
+        }
     };
     let xml_string = String::from_utf8(xml.unwrap())?;
     Ok(xml_string)
@@ -27,28 +31,29 @@ fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<&'py PyArray<f6
     let file = E57Reader::from_file(filepath);
     let mut file = match file {
         Ok(file) => file,
-        Err(e) => return Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string())),
+        Err(e) => {
+            return Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(
+                e.to_string(),
+            ))
+        }
     };
-    let pc = file
-        .pointclouds();
-    let pc = pc
-        .first()
-        .expect("files contain pointclouds");
-    let mut arr = Array2::zeros((pc.records as usize, 3 ));
+    let pc = file.pointclouds();
+    let pc = pc.first().expect("files contain pointclouds");
+    let mut arr = Array2::zeros((pc.records as usize, 3));
 
     let iter = file
         .pointcloud(pc)
         .expect("this file contains a pointcloud");
     for (i, p) in iter.enumerate() {
         let p = p.expect("Unable to read next point");
-        let p = Point::from_values(p, &pc.prototype).expect("failed to convert raw point to simple point");
+        let p = Point::from_values(p, &pc.prototype)
+            .expect("failed to convert raw point to simple point");
         if let Some(c) = p.cartesian {
             let coordinates = array![c.x, c.y, c.z];
             let mut row = arr.row_mut(i);
             row.add_assign(&coordinates);
         }
     }
-
 
     Ok(arr.into_pyarray(py))
 }
