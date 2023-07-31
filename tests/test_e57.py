@@ -33,3 +33,58 @@ def test_global_box_center():
     assert X == pytest.approx(-0.016840)
     assert Y == pytest.approx(0.113666)
     assert Z == pytest.approx(-0.001537)
+
+
+def test_file_not_found():
+    raised = False
+    try:
+        pointcloud: np.ndarray = e57.read_points(r"testdata/filenotfound.e57")
+    except RuntimeError as e:
+        raised = True
+        assert "Failed to read E57" in str(e)
+        assert "Unable to open file" in str(e)
+    assert raised
+
+
+def test_empty_file():
+    raised = False
+    try:
+        pointcloud: np.ndarray = e57.read_points(r"testdata/empty.e57")
+    except RuntimeError as e:
+        raised = True
+        assert "Failed to read E57" in str(e)
+        assert "Failed to read E57 file header" in str(e)
+    assert raised
+
+
+def test_invalid_file():
+    raised = False
+    try:
+        pointcloud: np.ndarray = e57.read_points(r"testdata/invalid.e57")
+    except RuntimeError as e:
+        raised = True
+        assert "Failed to read E57" in str(e)
+        assert "Failed to read E57 file header" in str(e)
+    assert raised
+
+
+def test_just_xml():
+    raised = False
+    try:
+        pointcloud: np.ndarray = e57.read_points(r"testdata/justxml.e57")
+    except RuntimeError as e:
+        raised = True
+        assert "Invalid E57 content" in str(e)
+        assert "Found unsupported signature in header" in str(e)
+    assert raised
+
+
+def test_raw_xml_just_xml():
+    raised = False
+    try:
+        raw_xml = e57.raw_xml(r"testdata/justxml.e57")
+    except RuntimeError as e:
+        raised = True
+        assert "Failed to read E57" in str(e)
+        assert "Failed creating paged CRC reader" in str(e)
+    assert raised
