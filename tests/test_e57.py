@@ -79,6 +79,37 @@ def test_just_xml():
     assert raised
 
 
+def test_raw_xml_file_not_found():
+    raised = False
+    try:
+        raw_xml = e57.raw_xml(r"testdata/filenotfound.e57")
+    except FileNotFoundError as e:
+        raised = True
+    assert raised
+
+
+def test_raw_xml_empty():
+    raised = False
+    try:
+        raw_xml = e57.raw_xml(r"testdata/empty.e57")
+    except RuntimeError as e:
+        raised = True
+        assert "Failed to read E57" in str(e)
+        assert "Cannot read page size bytes" in str(e)
+    assert raised
+
+
+def test_raw_xml_invalid():
+    raised = False
+    try:
+        raw_xml = e57.raw_xml(r"testdata/invalid.e57")
+    except RuntimeError as e:
+        raised = True
+        assert "Failed to read E57" in str(e)
+        assert "Cannot read page size bytes" in str(e)
+    assert raised
+
+
 def test_raw_xml_just_xml():
     raised = False
     try:
