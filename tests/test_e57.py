@@ -38,7 +38,7 @@ def test_global_box_center():
 def test_file_not_found():
     raised = False
     try:
-        pointcloud: np.ndarray = e57.read_points(r"testdata/filenotfound.e57")
+        e57.read_points(r"testdata/filenotfound.e57")
     except RuntimeError as e:
         raised = True
         assert "Failed to read E57" in str(e)
@@ -49,7 +49,7 @@ def test_file_not_found():
 def test_empty_file():
     raised = False
     try:
-        pointcloud: np.ndarray = e57.read_points(r"testdata/empty.e57")
+        e57.read_points(r"testdata/empty.e57")
     except RuntimeError as e:
         raised = True
         assert "Failed to read E57" in str(e)
@@ -60,7 +60,7 @@ def test_empty_file():
 def test_invalid_file():
     raised = False
     try:
-        pointcloud: np.ndarray = e57.read_points(r"testdata/invalid.e57")
+        e57.read_points(r"testdata/invalid.e57")
     except RuntimeError as e:
         raised = True
         assert "Failed to read E57" in str(e)
@@ -71,7 +71,7 @@ def test_invalid_file():
 def test_just_xml():
     raised = False
     try:
-        pointcloud: np.ndarray = e57.read_points(r"testdata/justxml.e57")
+        e57.read_points(r"testdata/justxml.e57")
     except RuntimeError as e:
         raised = True
         assert "Invalid E57 content" in str(e)
@@ -82,8 +82,8 @@ def test_just_xml():
 def test_raw_xml_file_not_found():
     raised = False
     try:
-        raw_xml = e57.raw_xml(r"testdata/filenotfound.e57")
-    except FileNotFoundError as e:
+        e57.raw_xml(r"testdata/filenotfound.e57")
+    except FileNotFoundError:
         raised = True
     assert raised
 
@@ -91,7 +91,7 @@ def test_raw_xml_file_not_found():
 def test_raw_xml_empty():
     raised = False
     try:
-        raw_xml = e57.raw_xml(r"testdata/empty.e57")
+        e57.raw_xml(r"testdata/empty.e57")
     except RuntimeError as e:
         raised = True
         assert "Failed to read E57" in str(e)
@@ -102,7 +102,7 @@ def test_raw_xml_empty():
 def test_raw_xml_invalid():
     raised = False
     try:
-        raw_xml = e57.raw_xml(r"testdata/invalid.e57")
+        e57.raw_xml(r"testdata/invalid.e57")
     except RuntimeError as e:
         raised = True
         assert "Failed to read E57" in str(e)
@@ -113,7 +113,7 @@ def test_raw_xml_invalid():
 def test_raw_xml_just_xml():
     raised = False
     try:
-        raw_xml = e57.raw_xml(r"testdata/justxml.e57")
+        e57.raw_xml(r"testdata/justxml.e57")
     except RuntimeError as e:
         raised = True
         assert "Failed to read E57" in str(e)
