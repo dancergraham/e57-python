@@ -6,8 +6,16 @@ This python library wraps the [rust e57 library](https://github.com/cry-inc/e57)
 
 - [x] Proof of concept xml reading
 - [ ] Read e57 to python dict
-- [ ] Read e57 to numpy array
+- [ ] Read e57 to numpy array - work in progress - see `read_points` method.
 - [ ] Write to e57 (format ?)
+
+## Getting Started
+
+We need a getting started guide - could you write one based on our tests?
+
+## Contributing
+
+All contributions welcome - feature requests, bug reports, documentation, sample files, tests, rust code, python code, sharing the project online / via social media, ...
 
 ## Testing
 
