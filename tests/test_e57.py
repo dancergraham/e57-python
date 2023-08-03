@@ -1,7 +1,6 @@
+import e57
 import numpy as np
 import pytest
-
-import e57
 
 
 def test_raw_xml():
@@ -13,6 +12,13 @@ def test_read_points():
     pointcloud = e57.read_points(r"testdata/bunnyFloat.e57")
     assert isinstance(pointcloud, np.ndarray)
     assert len(pointcloud) == 30_571
+
+
+def test_read_points_spherical():
+    pointcloud = e57.read_points(r"testdata/pipeSpherical.e57")
+    assert isinstance(pointcloud, np.ndarray)
+    assert len(pointcloud) == 1_220
+    assert pointcloud[0][0] == pytest.approx(-0.32225147)
 
 
 def test_box_dimensions():
