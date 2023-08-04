@@ -2,8 +2,8 @@ use std::fs::File;
 use std::io::BufReader;
 
 use ::e57::{E57Reader, Point};
-use ndarray::{array, Array2, Ix2};
-use numpy::{IntoPyArray, PyArray};
+use ndarray::Ix2;
+use numpy::PyArray;
 use pyo3::prelude::*;
 
 /// Extracts the xml contents from an e57 file.
@@ -38,25 +38,22 @@ fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<&'py PyArray<f6
     };
     let pc = file.pointclouds();
     let pc = pc.first().expect("files contain pointclouds");
-    let mut arr = Array2::zeros((pc.records as usize, 3));
-
+    let mut vec = Vec::new();
     let iter = file
         .pointcloud(pc)
         .expect("this file contains a pointcloud");
-    for (i, p) in iter.enumerate() {
+    for p in iter {
         let p = p.expect("Unable to read next point");
         let p = Point::from_values(p, &pc.prototype)
             .expect("failed to convert raw point to simple point");
-        let mut row = arr.row_mut(i);
         if let Some(c) = p.cartesian {
             if let Some(invalid) = p.cartesian_invalid {
-                            if invalid != 0 {
+                if invalid != 0 {
                     continue;
                 }
-                        }
+            }
 
-            let coordinates = array![c.x, c.y, c.z];
-            row.assign(&coordinates);
+            vec.push(vec![c.x, c.y, c.z]);
         } else if let Some(s) = p.spherical {
             if let Some(invalid) = p.spherical_invalid {
                 if invalid != 0 {
@@ -67,12 +64,11 @@ fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<&'py PyArray<f6
             let x = s.range * cos_ele * f64::cos(s.azimuth);
             let y = s.range * cos_ele * f64::sin(s.azimuth);
             let z = s.range * f64::sin(s.elevation);
-            let coordinates = array![x, y, z];
-            row.assign(&coordinates);
+            vec.push(vec![x, y, z]);
         }
     }
-
-    Ok(arr.into_pyarray(py))
+    let pyarray = PyArray::from_vec2(py, &vec).unwrap();
+    Ok(pyarray)
 }
 
 /// e57 pointcloud file reading.
