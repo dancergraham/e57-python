@@ -23,6 +23,9 @@ classifiers = [
     "Topic :: File Formats",
 ]
 
+[project.urls]
+repository = "https://github.com/dancergraham/e57-python"
+
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
