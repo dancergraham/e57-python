@@ -3,7 +3,7 @@ use std::io::BufReader;
 
 use ::e57::{E57Reader, Point};
 use ndarray::Ix2;
-use numpy::PyArray;
+use numpy::{PyArray};
 use pyo3::prelude::*;
 
 /// Extracts the xml contents from an e57 file.
@@ -38,7 +38,9 @@ fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<&'py PyArray<f6
     };
     let pc = file.pointclouds();
     let pc = pc.first().expect("files contain pointclouds");
-    let mut vec = Vec::with_capacity(pc.records as usize);
+    let ncols = 3;
+    let mut vec = Vec::with_capacity(pc.records as usize * ncols);
+    let mut nrows = 0;
     let iter = file
         .pointcloud(pc)
         .expect("this file contains a pointcloud");
@@ -52,8 +54,8 @@ fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<&'py PyArray<f6
                     continue;
                 }
             }
-
-            vec.push(vec![c.x, c.y, c.z]);
+            vec.extend([c.x, c.y, c.z]);
+            nrows += 1
         } else if let Some(s) = p.spherical {
             if let Some(invalid) = p.spherical_invalid {
                 if invalid != 0 {
@@ -64,11 +66,11 @@ fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<&'py PyArray<f6
             let x = s.range * cos_ele * f64::cos(s.azimuth);
             let y = s.range * cos_ele * f64::sin(s.azimuth);
             let z = s.range * f64::sin(s.elevation);
-            vec.push(vec![x, y, z]);
+            vec.extend([x, y, z]);
+            nrows += 1
         }
     }
-    let pyarray = PyArray::from_vec2(py, &vec).unwrap();
-    Ok(pyarray)
+    Ok(PyArray::from_vec(py, vec).reshape((nrows, ncols)).unwrap())
 }
 
 /// e57 pointcloud file reading.
