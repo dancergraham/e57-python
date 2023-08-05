@@ -38,7 +38,7 @@ fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<&'py PyArray<f6
     };
     let pc = file.pointclouds();
     let pc = pc.first().expect("files contain pointclouds");
-    let mut vec = Vec::new();
+    let mut vec = Vec::with_capacity(pc.records as usize);
     let iter = file
         .pointcloud(pc)
         .expect("this file contains a pointcloud");
