@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::BufReader;
 
-use ::e57::{E57Reader, Point};
+use ::e57::{CartesianCoordinate, E57Reader};
 use ndarray::Ix2;
 use numpy::{PyArray};
 use pyo3::prelude::*;
@@ -41,35 +41,24 @@ fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<&'py PyArray<f6
     let ncols = 3;
     let mut vec = Vec::with_capacity(pc.records as usize * ncols);
     let mut nrows = 0;
-    let iter = file
-        .pointcloud(pc)
-        .expect("this file contains a pointcloud");
-    for p in iter {
-        let p = p.expect("Unable to read next point");
-        let p = Point::from_values(p, &pc.prototype)
-            .expect("failed to convert raw point to simple point");
-        if let Some(c) = p.cartesian {
-            if let Some(invalid) = p.cartesian_invalid {
-                if invalid != 0 {
-                    continue;
-                }
+    for pointcloud in file.pointclouds() {
+        let mut iter = file
+            .pointcloud_simple(&pointcloud)
+            .expect("this file should contain a pointcloud");
+        iter.spherical_to_cartesian(true);
+        iter.cartesian_to_spherical(false);
+        iter.intensity_to_color(true);
+        iter.apply_pose(true);
+
+        for p in iter {
+            let p = p.expect("Unable to read next point");
+            if let CartesianCoordinate::Valid { x, y, z } = p.cartesian {
+                vec.extend([x, y, z]);
+                nrows += 1
             }
-            vec.extend([c.x, c.y, c.z]);
-            nrows += 1
-        } else if let Some(s) = p.spherical {
-            if let Some(invalid) = p.spherical_invalid {
-                if invalid != 0 {
-                    continue;
-                }
-            }
-            let cos_ele = f64::cos(s.elevation);
-            let x = s.range * cos_ele * f64::cos(s.azimuth);
-            let y = s.range * cos_ele * f64::sin(s.azimuth);
-            let z = s.range * f64::sin(s.elevation);
-            vec.extend([x, y, z]);
-            nrows += 1
         }
     }
+
     Ok(PyArray::from_vec(py, vec).reshape((nrows, ncols)).unwrap())
 }
 
