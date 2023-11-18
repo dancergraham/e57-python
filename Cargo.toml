@@ -1,6 +1,6 @@
 [package]
 name = "e57-python"
-version = "0.1.0-a2"
+version = "0.1.0-a4"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -9,7 +9,7 @@ name = "e57"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.19.1"
-e57 = "0.5.1"
-numpy = "0.19.0"
+pyo3 = "0.20.0"
+e57 = "0.10.2"
+numpy = "0.20.0"
 ndarray = "0.15.6"
