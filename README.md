@@ -1,3 +1,7 @@
+[![PyPI](https://img.shields.io/pypi/v/e57.svg)](https://pypi.org/project/e57)
+![GitHub](https://img.shields.io/github/actions/workflow/status/dancergraham/e57-python/CI.yml?branch=main)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/dancergraham/e57-python/main/pyproject.toml)
+
 # E57 Python Library
 
 E57 is a compact, non-proprietary point cloud format that's defined by the ASTM E2807 standard. This format is widely adopted by 3D design applications.
