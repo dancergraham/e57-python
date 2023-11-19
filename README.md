@@ -14,7 +14,21 @@ This python library wraps the [rust e57 library](https://github.com/cry-inc/e57)
 
 ## Getting Started
 
-We need a getting started guide - could you write one based on our tests?
+`pip install e57`
+
+```python
+>>> import e57
+>>> e57.read_points(r"pointcloud.e57")
+array([[-23.25304444, -28.17607415, -13.44830654],
+       [-23.28290139, -28.02118905, -13.44237764],
+       [-23.26799723, -27.9039115 , -13.43430738],
+       ...,
+       [ 23.2458152 ,  25.4866642 ,  12.45043932],
+       [ 23.22830673,  25.58055374,  12.49285875],
+       [ 23.25270363,  25.45909652,  12.54284554]])
+```
+
+We need a tutorial - could you write one based on our tests?
 
 ## Contributing
 
