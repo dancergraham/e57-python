@@ -10,14 +10,30 @@ def test_raw_xml():
 
 def test_read_points():
     pointcloud = e57.read_points(r"testdata/bunnyFloat.e57")
-    assert isinstance(pointcloud, np.ndarray)
-    assert len(pointcloud) == 30_571
+    points = pointcloud.points
+    assert isinstance(points, np.ndarray)
+    assert len(points) == 30_571
+
+
+def test_read_spherical():
+    pointcloud = e57.read_points(r"testdata/pipeSpherical.e57")
+    points = pointcloud.points
+    assert isinstance(points, np.ndarray)
+    assert len(points) == 1_220
+
+
+def test_read_color():
+    pointcloud = e57.read_points(r"testdata/pipeSpherical.e57")
+    color = pointcloud.color
+    assert isinstance(color, np.ndarray)
+    assert len(color) == 1_220
 
 
 def test_box_dimensions():
     pointcloud: np.ndarray = e57.read_points(r"testdata/bunnyFloat.e57")
-    max_coords = pointcloud.max(0, None, False, -np.inf)
-    min_coords = pointcloud.min(0, None, False, np.inf)
+    points = pointcloud.points
+    max_coords = points.max(0, None, False, -np.inf)
+    min_coords = points.min(0, None, False, np.inf)
     X, Y, Z = max_coords - min_coords
     assert X == pytest.approx(0.155698)
     assert Y == pytest.approx(0.14731)
@@ -26,8 +42,8 @@ def test_box_dimensions():
 
 def test_global_box_center():
     pointcloud: np.ndarray = e57.read_points(r"testdata/bunnyFloat.e57")
-    max_coords = pointcloud.max(0, None, False, -np.inf)
-    min_coords = pointcloud.min(0, None, False, np.inf)
+    max_coords = pointcloud.points.max(0, None, False, -np.inf)
+    min_coords = pointcloud.points.min(0, None, False, np.inf)
     X, Y, Z = (max_coords + min_coords) / 2
     assert X == pytest.approx(-0.016840)
     assert Y == pytest.approx(0.113666)
