@@ -9,7 +9,8 @@ E57 is a compact, non-proprietary point cloud format that's defined by the ASTM 
 This python library wraps the [rust e57 library](https://github.com/cry-inc/e57) to provide file reading
 
 - [x] Proof of concept xml reading
-- [x] Read e57 to numpy array - see `read_points` method.
+- [x] Read e57 point coordinates to numpy array - see `read_points` method.
+- [ ] Read intensity and other fields to numpy array.
 - [ ] Write to e57 (format ?)
 
 ## Getting Started
