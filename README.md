@@ -10,6 +10,7 @@ This python library wraps the [rust e57 library](https://github.com/cry-inc/e57)
 
 - [x] Proof of concept xml reading
 - [x] Read e57 point coordinates to numpy array - see `read_points` method.
+- [x] Read color field to numpy array.
 - [ ] Read intensity and other fields to numpy array.
 - [ ] Write to e57 (format ?)
 
