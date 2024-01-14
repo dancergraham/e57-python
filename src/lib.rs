@@ -12,6 +12,8 @@ pub struct E57 {
     pub points: Py<PyArray<f64, Ix2>>,
     #[pyo3(get)]
     pub color: Py<PyArray<f32, Ix2>>,
+    #[pyo3(get)]
+    pub intensity: Py<PyArray<f32, Ix2>>,
 }
 
 /// Extracts the xml contents from an e57 file.
@@ -34,7 +36,7 @@ fn raw_xml(filepath: &str) -> PyResult<String> {
 
 /// Extracts the point data from an e57 file.
 #[pyfunction]
-unsafe fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<E57> {
+unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
     let file = E57Reader::from_file(filepath);
     let mut file = match file {
         Ok(file) => file,
@@ -46,8 +48,9 @@ unsafe fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<E57> {
     };
     let pc = file.pointclouds();
     let pc = pc.first().expect("files contain pointclouds");
+    let mut point_vec = Vec::with_capacity(pc.records as usize * 3);
     let mut color_vec = Vec::with_capacity(pc.records as usize * 3);
-    let mut vec = Vec::with_capacity(pc.records as usize * 3);
+    let mut intensity_vec = Vec::with_capacity(pc.records as usize);
     let mut nrows = 0;
     for pointcloud in file.pointclouds() {
         let mut iter = file
@@ -61,7 +64,7 @@ unsafe fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<E57> {
         for p in iter {
             let p = p.expect("Unable to read next point");
             if let CartesianCoordinate::Valid { x, y, z } = p.cartesian {
-                vec.extend([x, y, z]);
+                point_vec.extend([x, y, z]);
                 nrows += 1
             }
             // if let Some(intensity) = p.intensity{
@@ -70,19 +73,26 @@ unsafe fn read_points<'py>(py: Python<'py>, filepath: &str) -> PyResult<E57> {
             if let Some(color) = p.color {
                 color_vec.extend([color.red, color.green, color.blue])
             }
+            if let Some(intensity) = p.intensity {
+                intensity_vec.push(intensity)
+            }
         }
     }
-    if color_vec.len() == vec.len() {
-        Ok(E57 {
-            points: Py::from(PyArray::from_vec(py, vec).reshape((nrows, 3)).unwrap()),
-            color: Py::from(PyArray::from_vec(py, color_vec).reshape((nrows, 3)).unwrap()),
-        })
-    } else {
-        Ok(E57 {
-            points: Py::from(PyArray::from_vec(py, vec).reshape((nrows, 3)).unwrap()),
-            color: Py::from(PyArray::new(py, (0,3), false)),
-        })
+    let n_points = point_vec.len() / 3;
+    let n_colors = color_vec.len() / 3;
+    let n_intensities = intensity_vec.len();
+    let mut e57 = E57 {
+        points: Py::from(PyArray::from_vec(py, point_vec).reshape((nrows, 3)).unwrap()),
+        color: Py::from(PyArray::new(py, (0, 3), false)),
+        intensity: Py::from(PyArray::new(py, (0, 1), false)),
+    };
+    if n_colors == n_points {
+        e57.color = Py::from(PyArray::from_vec(py, color_vec).reshape((nrows, 3)).unwrap())
     }
+    if n_intensities == n_points {
+        e57.intensity = Py::from(PyArray::from_vec(py, intensity_vec).reshape((nrows, 1)).unwrap())
+    }
+    Ok(e57)
 }
 
 /// e57 pointcloud file reading.

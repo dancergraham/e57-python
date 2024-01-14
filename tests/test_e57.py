@@ -29,6 +29,13 @@ def test_read_color():
     assert len(color) == 1_220
 
 
+def test_read_intensity():
+    pointcloud = e57.read_points(r"testdata/pipeSpherical.e57")
+    intensity = pointcloud.intensity
+    assert isinstance(intensity, np.ndarray)
+    assert len(intensity) == 1_220
+
+
 def test_box_dimensions():
     pointcloud: np.ndarray = e57.read_points(r"testdata/bunnyFloat.e57")
     points = pointcloud.points
