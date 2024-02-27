@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::BufReader;
 
 use ::e57::{CartesianCoordinate, E57Reader};
-use ndarray::{Ix2};
+use ndarray::Ix2;
 use numpy::PyArray;
 use pyo3::prelude::*;
 
@@ -82,15 +82,27 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
     let n_colors = color_vec.len() / 3;
     let n_intensities = intensity_vec.len();
     let mut e57 = E57 {
-        points: Py::from(PyArray::from_vec(py, point_vec).reshape((nrows, 3)).unwrap()),
+        points: Py::from(
+            PyArray::from_vec(py, point_vec)
+                .reshape((nrows, 3))
+                .unwrap(),
+        ),
         color: Py::from(PyArray::new(py, (0, 3), false)),
         intensity: Py::from(PyArray::new(py, (0, 1), false)),
     };
     if n_colors == n_points {
-        e57.color = Py::from(PyArray::from_vec(py, color_vec).reshape((nrows, 3)).unwrap())
+        e57.color = Py::from(
+            PyArray::from_vec(py, color_vec)
+                .reshape((nrows, 3))
+                .unwrap(),
+        )
     }
     if n_intensities == n_points {
-        e57.intensity = Py::from(PyArray::from_vec(py, intensity_vec).reshape((nrows, 1)).unwrap())
+        e57.intensity = Py::from(
+            PyArray::from_vec(py, intensity_vec)
+                .reshape((nrows, 1))
+                .unwrap(),
+        )
     }
     Ok(e57)
 }
