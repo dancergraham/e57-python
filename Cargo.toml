@@ -9,7 +9,7 @@ name = "e57"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.20.0"
-e57 = "0.10.3"
+pyo3 = "0.20.3"
+e57 = "0.10.5"
 numpy = "0.20.0"
 ndarray = "0.15.6"
