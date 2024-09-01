@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::BufReader;
 
 use ::e57::{CartesianCoordinate, E57Reader};
-use ndarray::Ix2;
+use numpy::ndarray::Ix2;
 use numpy::PyArray;
 use pyo3::prelude::*;
 
@@ -87,8 +87,8 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
                 .reshape((nrows, 3))
                 .unwrap(),
         ),
-        color: Py::from(PyArray::new(py, (0, 3), false)),
-        intensity: Py::from(PyArray::new(py, (0, 1), false)),
+        color: Py::from(PyArray::new_bound(py, (0, 3), false)),
+        intensity: Py::from(PyArray::new_bound(py, (0, 1), false)),
     };
     if n_colors == n_points {
         e57.color = Py::from(
