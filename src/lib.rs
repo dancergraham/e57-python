@@ -52,8 +52,6 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
     let mut color_vec = Vec::with_capacity(pc.records as usize * 3);
     let mut intensity_vec = Vec::with_capacity(pc.records as usize);
     let mut nrows = 0;
-    let intensity_min = pc.intensity_limits.map(|limits| limits.min).unwrap_or(0.0);
-    let intensity_max = pc.intensity_limits.map(|limits| limits.max).unwrap_or(1.0);
     for pointcloud in file.pointclouds() {
         let mut iter = file
             .pointcloud_simple(&pointcloud)
@@ -61,6 +59,7 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
         iter.spherical_to_cartesian(true);
         iter.cartesian_to_spherical(false);
         iter.intensity_to_color(true);
+        iter.normalize_intensity(false);
         iter.apply_pose(true);
 
         for p in iter {
@@ -73,8 +72,7 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
                 color_vec.extend([color.red, color.green, color.blue])
             }
             if let Some(intensity) = p.intensity {
-                let rescaled_intensity = (intensity * (intensity_max - intensity_min)) + intensity_min;
-                intensity_vec.push(rescaled_intensity)
+                intensity_vec.push(intensity);
             }
         }
     }

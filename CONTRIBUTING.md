@@ -1,8 +1,8 @@
-# How to contribute
+### How to contribute
 
 All contributions welcome 
-- Ideas, feature requests 💡
-- bug reports 🪲
+- [Ideas, feature requests](https://github.com/dancergraham/e57-python/issues) 💡
+- [bug reports](https://github.com/dancergraham/e57-python/issues) 🪲
 - documentation 📃
 - sample files 🌫️
 - tests 
@@ -10,9 +10,7 @@ All contributions welcome
 - python code 🐍
 - tell your friends, share the project online / via social media, ... 🗣️
 
-## Best practice 
-
-If you know how, you should fork the repo, create a new branch and then submit a pull request.
+Fork the repo, create a new branch and then submit a pull request.
 
 (If you are new to GitHub, you might start with a basic tutorial and check out a more detailed guide to pull requests.)
 
