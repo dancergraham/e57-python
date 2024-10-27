@@ -34,6 +34,8 @@ def test_read_intensity():
     intensity = pointcloud.intensity
     assert isinstance(intensity, np.ndarray)
     assert len(intensity) == 1_220
+    assert np.all(intensity >= 0.3935)
+    assert np.all(intensity <= 0.5555)
 
 
 def test_no_rgb_intensity():
