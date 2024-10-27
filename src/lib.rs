@@ -3,7 +3,7 @@ use std::io::BufReader;
 
 use ::e57::{CartesianCoordinate, E57Reader};
 use ndarray::Ix2;
-use numpy::PyArray;
+use numpy::{PyArray, PyArrayMethods};
 use pyo3::prelude::*;
 
 #[pyclass]
@@ -81,24 +81,24 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
     let n_intensities = intensity_vec.len();
     let mut e57 = E57 {
         points: Py::from(
-            PyArray::from_vec(py, point_vec)
-                .reshape((nrows, 3))
+            PyArray::from_vec_bound(py, point_vec)
+                .reshape([nrows, 3])
                 .unwrap(),
         ),
-        color: Py::from(PyArray::new(py, (0, 3), false)),
-        intensity: Py::from(PyArray::new(py, (0, 1), false)),
+        color: Py::from(PyArray::new_bound(py, (0, 3), false)),
+        intensity: Py::from(PyArray::new_bound(py, (0, 1), false)),
     };
     if n_colors == n_points {
         e57.color = Py::from(
-            PyArray::from_vec(py, color_vec)
-                .reshape((nrows, 3))
+            PyArray::from_vec_bound(py, color_vec)
+                .reshape([nrows, 3])
                 .unwrap(),
         )
     }
     if n_intensities == n_points {
         e57.intensity = Py::from(
-            PyArray::from_vec(py, intensity_vec)
-                .reshape((nrows, 1))
+            PyArray::from_vec_bound(py, intensity_vec)
+                .reshape([nrows, 1])
                 .unwrap(),
         )
     }
@@ -107,7 +107,7 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
 
 /// e57 pointcloud file reading.
 #[pymodule]
-fn e57(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn e57(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<E57>()?;
     m.add_function(wrap_pyfunction!(raw_xml, m)?)?;
     m.add_function(wrap_pyfunction!(read_points, m)?)?;
