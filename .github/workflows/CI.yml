@@ -51,6 +51,8 @@ jobs:
           path: dist
       - name: pytest
         if: ${{ startsWith(matrix.platform.target, 'x86_64') }}
+        env:
+          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         shell: bash
         run: |
           set -e
