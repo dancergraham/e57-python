@@ -62,12 +62,12 @@ jobs:
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
         uses: uraimo/run-on-arch-action@v2
+        env:
+          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         with:
           arch: ${{ matrix.platform.target }}
           distro: ubuntu22.04
           githubToken: ${{ github.token }}
-          env:
-            PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
           install: |
             apt-get update
             apt-get install -y --no-install-recommends python3 python3-pip
