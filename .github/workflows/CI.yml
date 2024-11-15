@@ -153,8 +153,6 @@ jobs:
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'aarch64') }}
         shell: bash
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         run: |
           set -e
           python3 -m venv .venv
