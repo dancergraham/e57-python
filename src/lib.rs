@@ -5,6 +5,9 @@ use ::e57::{CartesianCoordinate, E57Reader};
 use ndarray::Ix2;
 use numpy::{PyArray, PyArrayMethods};
 use pyo3::prelude::*;
+use image::DynamicImage;
+use opencv::core::Mat;
+use opencv::prelude::*;
 
 #[pyclass]
 pub struct E57 {
@@ -14,6 +17,10 @@ pub struct E57 {
     pub color: Py<PyArray<f32, Ix2>>,
     #[pyo3(get)]
     pub intensity: Py<PyArray<f32, Ix2>>,
+    #[pyo3(get)]
+    pub images: Vec<Py<PyArray<u8, Ix2>>>,
+    #[pyo3(get)]
+    pub metadata: Vec<String>,
 }
 
 /// Extracts the xml contents from an e57 file.
@@ -87,6 +94,8 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
         ),
         color: Py::from(PyArray::new_bound(py, (0, 3), false)),
         intensity: Py::from(PyArray::new_bound(py, (0, 1), false)),
+        images: Vec::new(),
+        metadata: Vec::new(),
     };
     if n_colors == n_points {
         e57.color = Py::from(
@@ -105,11 +114,44 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
     Ok(e57)
 }
 
+/// Extracts the image data and metadata from an e57 file.
+#[pyfunction]
+unsafe fn read_images(py: Python<'_>, filepath: &str) -> PyResult<E57> {
+    let file = E57Reader::from_file(filepath);
+    let mut file = match file {
+        Ok(file) => file,
+        Err(e) => {
+            return Err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(
+                e.to_string(),
+            ));
+        }
+    };
+    let mut images = Vec::new();
+    let mut metadata = Vec::new();
+    for image in file.images() {
+        let img_data = file.image_data(&image).expect("Unable to read image data");
+        let img = DynamicImage::from_bytes(img_data).expect("Unable to create image");
+        let mat = Mat::from_slice(&img.to_bytes()).expect("Unable to create Mat");
+        let np_array = PyArray::from_vec(py, mat.data_bytes().to_vec());
+        images.push(Py::from(np_array));
+        metadata.push(image.metadata.clone());
+    }
+    let e57 = E57 {
+        points: Py::from(PyArray::new_bound(py, (0, 3), false)),
+        color: Py::from(PyArray::new_bound(py, (0, 3), false)),
+        intensity: Py::from(PyArray::new_bound(py, (0, 1), false)),
+        images,
+        metadata,
+    };
+    Ok(e57)
+}
+
 /// e57 pointcloud file reading.
 #[pymodule]
 fn e57(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<E57>()?;
     m.add_function(wrap_pyfunction!(raw_xml, m)?)?;
     m.add_function(wrap_pyfunction!(read_points, m)?)?;
+    m.add_function(wrap_pyfunction!(read_images, m)?)?;
     Ok(())
 }

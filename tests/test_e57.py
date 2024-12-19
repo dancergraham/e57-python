@@ -150,3 +150,15 @@ def test_raw_xml_just_xml():
         assert "Failed to read E57" in str(e)
         assert "Failed creating paged CRC reader" in str(e)
     assert raised
+
+
+def test_read_images():
+    e57_data = e57.read_images(r"testdata/pipeSpherical.e57")
+    images = e57_data.images
+    metadata = e57_data.metadata
+    assert isinstance(images, list)
+    assert all(isinstance(img, np.ndarray) for img in images)
+    assert isinstance(metadata, list)
+    assert all(isinstance(meta, str) for meta in metadata)
+    assert len(images) == 6
+    assert len(metadata) == 6
