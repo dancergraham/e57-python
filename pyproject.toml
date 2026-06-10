@@ -12,7 +12,7 @@ description = "Read e57 files to Python. E57 is a compact, non-proprietary point
 authors = [
     { name = "Graham Knapp", email = "graham.knapp@gmail.com" }
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 keywords = ["pointcloud", "e57", "lidar"]
 classifiers = [
     "Programming Language :: Rust",
