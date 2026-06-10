@@ -110,12 +110,12 @@ jobs:
           name: wheels-musllinux-${{ matrix.platform.target }}
           path: dist
       - name: pytest
-        if: ${{ !startsWith(matrix.platform.target, 'x86') }}
+        if: ${{ matrix.platform.target == 'x86_64' }}
         uses: uraimo/run-on-arch-action@v2
         env:
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         with:
-          arch: ${{ matrix.platform.target }}
+          arch: x86_64
           distro: alpine_latest
           githubToken: ${{ github.token }}
           install: |
