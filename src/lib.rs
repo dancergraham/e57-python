@@ -2,18 +2,18 @@ use std::fs::File;
 use std::io::BufReader;
 
 use ::e57::{CartesianCoordinate, E57Reader};
-use ndarray::Ix2;
-use numpy::{PyArray, PyArrayMethods};
+use numpy::ndarray::Array2;
+use numpy::{IntoPyArray, PyArray2};
 use pyo3::prelude::*;
 
 #[pyclass]
 pub struct E57 {
     #[pyo3(get)]
-    pub points: Py<PyArray<f64, Ix2>>,
+    pub points: Py<PyArray2<f64>>,
     #[pyo3(get)]
-    pub color: Py<PyArray<f32, Ix2>>,
+    pub color: Py<PyArray2<f32>>,
     #[pyo3(get)]
-    pub intensity: Py<PyArray<f32, Ix2>>,
+    pub intensity: Py<PyArray2<f32>>,
 }
 
 /// Extracts the xml contents from an e57 file.
@@ -80,27 +80,24 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
     let n_colors = color_vec.len() / 3;
     let n_intensities = intensity_vec.len();
     let mut e57 = E57 {
-        points: Py::from(
-            PyArray::from_vec_bound(py, point_vec)
-                .reshape([nrows, 3])
-                .unwrap(),
-        ),
-        color: Py::from(PyArray::new_bound(py, (0, 3), false)),
-        intensity: Py::from(PyArray::new_bound(py, (0, 1), false)),
+        points: Array2::from_shape_vec((nrows, 3), point_vec)
+            .unwrap()
+            .into_pyarray(py)
+            .unbind(),
+        color: Array2::<f32>::zeros((0, 3)).into_pyarray(py).unbind(),
+        intensity: Array2::<f32>::zeros((0, 1)).into_pyarray(py).unbind(),
     };
     if n_colors == n_points {
-        e57.color = Py::from(
-            PyArray::from_vec_bound(py, color_vec)
-                .reshape([nrows, 3])
-                .unwrap(),
-        )
+        e57.color = Array2::from_shape_vec((nrows, 3), color_vec)
+            .unwrap()
+            .into_pyarray(py)
+            .unbind();
     }
     if n_intensities == n_points {
-        e57.intensity = Py::from(
-            PyArray::from_vec_bound(py, intensity_vec)
-                .reshape([nrows, 1])
-                .unwrap(),
-        )
+        e57.intensity = Array2::from_shape_vec((nrows, 1), intensity_vec)
+            .unwrap()
+            .into_pyarray(py)
+            .unbind();
     }
     Ok(e57)
 }
