@@ -6,13 +6,13 @@ build-backend = "maturin"
 name = "e57"
 version = "0.2.1a1"
 dependencies = [
-    'numpy>=2,<3',
+    'numpy>=2.4,<3',
 ]
 description = "Read e57 files to Python. E57 is a compact, non-proprietary point cloud format that's defined by the ASTM E2807 standard.  This format is widely adopted by 3D design applications."
 authors = [
     { name = "Graham Knapp", email = "graham.knapp@gmail.com" }
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 keywords = ["pointcloud", "e57", "lidar"]
 classifiers = [
     "Programming Language :: Rust",
