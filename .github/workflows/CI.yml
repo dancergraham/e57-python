@@ -214,9 +214,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           command: develop
-          args: --release
-      - name: Install test dependencies
-        run: pip install -e ".[test]"
+          args: --release --extras test
       - name: Run coverage
         run: pytest --cov=e57 --cov-report=term-missing --cov-report=xml
       - name: Upload coverage artifact
