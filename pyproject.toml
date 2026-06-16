@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "e57"
-version = "0.2.1a1"
+version = "0.2.3"
 dependencies = [
     'numpy>=2,<3',
 ]
