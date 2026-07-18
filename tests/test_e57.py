@@ -45,6 +45,26 @@ def test_no_rgb_intensity():
     assert len(intensity) == 0
 
 
+def test_read_color_values():
+    pointcloud = e57.read_points(r"testdata/pipeSpherical.e57")
+    color = pointcloud.color
+
+    first_point_color = color[0]
+    assert first_point_color[0] == pytest.approx(0.27450982)
+    assert first_point_color[1] == pytest.approx(0.30980393)
+    assert first_point_color[2] == pytest.approx(0.19607843)
+
+    mid_point_color = color[len(color) // 2]
+    assert mid_point_color[0] == pytest.approx(0.18823529)
+    assert mid_point_color[1] == pytest.approx(0.21568628)
+    assert mid_point_color[2] == pytest.approx(0.15294118)
+
+    last_point_color = color[-1]
+    assert last_point_color[0] == pytest.approx(0.11764706)
+    assert last_point_color[1] == pytest.approx(0.14117658)
+    assert last_point_color[2] == pytest.approx(0.08627451)
+
+
 def test_box_dimensions():
     pointcloud: np.ndarray = e57.read_points(r"testdata/bunnyFloat.e57")
     points = pointcloud.points
