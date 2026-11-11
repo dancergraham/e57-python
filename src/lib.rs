@@ -46,13 +46,18 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
             ));
         }
     };
-    let pc = file.pointclouds();
-    let pc = pc.first().expect("files contain pointclouds");
-    let mut point_vec = Vec::with_capacity(pc.records as usize * 3);
-    let mut color_vec = Vec::with_capacity(pc.records as usize * 3);
-    let mut intensity_vec = Vec::with_capacity(pc.records as usize);
+    let pointclouds = file.pointclouds();
+    // Reserve for every record in every scan up front, so multi-scan files
+    // don't reallocate (and copy) the buffers as later scans are read.
+    let records: usize = pointclouds.iter().map(|pc| pc.records as usize).sum();
+    let any_intensity = pointclouds.iter().any(|pc| pc.has_intensity());
+    // intensity_to_color(true) below fills colour from intensity when a scan has no colour.
+    let any_color = any_intensity || pointclouds.iter().any(|pc| pc.has_color());
+    let mut point_vec = Vec::with_capacity(records * 3);
+    let mut color_vec = Vec::with_capacity(if any_color { records * 3 } else { 0 });
+    let mut intensity_vec = Vec::with_capacity(if any_intensity { records } else { 0 });
     let mut nrows = 0;
-    for pointcloud in file.pointclouds() {
+    for pointcloud in pointclouds {
         let mut iter = file
             .pointcloud_simple(&pointcloud)
             .expect("this file should contain a pointcloud");
@@ -64,10 +69,13 @@ unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
 
         for p in iter {
             let p = p.expect("Unable to read next point");
-            if let CartesianCoordinate::Valid { x, y, z } = p.cartesian {
-                point_vec.extend([x, y, z]);
-                nrows += 1
-            }
+            // Invalid points are skipped entirely, so colour and intensity
+            // stay row-aligned with the points that are kept.
+            let CartesianCoordinate::Valid { x, y, z } = p.cartesian else {
+                continue;
+            };
+            point_vec.extend([x, y, z]);
+            nrows += 1;
             if let Some(color) = p.color {
                 color_vec.extend([color.red, color.green, color.blue])
             }
