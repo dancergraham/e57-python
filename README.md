@@ -40,6 +40,19 @@ array(([0.3019608 , 0.3529412 , 0.23137255],
        [0.21568628, 0.25882354, 0.1254902 ]], dtype=float32)
 ```
 
+To read every field of a scan exactly as stored, including row/column indices, return index/count, timestamps, invalid-state flags and extension fields:
+
+```python
+>>> raw = e57.read_scan_raw(r"pointcloud.e57", 0)
+>>> raw.keys()
+dict_keys(['cartesianX', 'cartesianY', 'cartesianZ', 'intensity', 'colorRed', 'colorGreen', 'colorBlue', 'rowIndex', 'columnIndex', 'cartesianInvalidState'])
+>>> raw["colorRed"].dtype   # stored integer type, not normalized
+dtype('uint8')
+>>> e57.read_scan_raw(r"pointcloud.e57", 0, fields=["rowIndex", "columnIndex"])  # only these fields
+```
+
+No pose is applied, and invalid points are kept.
+
 We need a tutorial - could you write one based on our tests?
 
 ## Contributing
