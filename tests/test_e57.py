@@ -150,3 +150,36 @@ def test_raw_xml_just_xml():
         assert "Failed to read E57" in str(e)
         assert "Failed creating paged CRC reader" in str(e)
     assert raised
+
+
+def _expected_invalid_points():
+    """Valid rows of testdata/invalidPoints.e57 (see testdata/generate_invalid_points.py)."""
+    rows = []
+    for n, offset, posed in ((30, 0.0, False), (60, 100.0, True)):
+        for i in range(n):
+            if i % 3 == 0:  # marked invalid
+                continue
+            x, y, z = i + offset, 2.0 * i, -float(i)
+            if posed:  # 90 degrees about z, then translate by (10, 0, 0)
+                x, y = -y + 10.0, x
+            rows.append(((x, y, z), (i % 256, (3 * i) % 256, 200), i / n))
+    return rows
+
+
+def test_invalid_points_keep_color_and_intensity():
+    pointcloud = e57.read_points(r"testdata/invalidPoints.e57")
+    expected = _expected_invalid_points()
+    assert pointcloud.points.shape == (len(expected), 3)
+    assert pointcloud.color.shape == (len(expected), 3)
+    assert pointcloud.intensity.shape == (len(expected), 1)
+
+
+def test_invalid_points_rows_aligned():
+    pointcloud = e57.read_points(r"testdata/invalidPoints.e57")
+    expected = _expected_invalid_points()
+    xyz = np.array([e[0] for e in expected])
+    rgb = np.array([e[1] for e in expected]) / 255.0
+    intensity = np.array([e[2] for e in expected])
+    np.testing.assert_allclose(pointcloud.points, xyz, atol=1e-9)
+    np.testing.assert_allclose(pointcloud.color, rgb, atol=1e-6)
+    np.testing.assert_allclose(pointcloud.intensity[:, 0], intensity, atol=1e-6)
