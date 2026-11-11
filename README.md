@@ -40,6 +40,17 @@ array(([0.3019608 , 0.3529412 , 0.23137255],
        [0.21568628, 0.25882354, 0.1254902 ]], dtype=float32)
 ```
 
+To read one scan at a time, for example to keep memory down on large multi-scan files:
+
+```python
+>>> e57.scan_count(r"pointcloud.e57")
+3
+>>> scan = e57.read_scan(r"pointcloud.e57", 0)                    # pose applied, like read_points
+>>> local = e57.read_scan(r"pointcloud.e57", 0, transform=False)  # scanner's local frame
+>>> scan.points.shape, scan.color.shape, scan.intensity.shape
+((1220, 3), (1220, 3), (1220, 1))
+```
+
 We need a tutorial - could you write one based on our tests?
 
 ## Contributing
