@@ -58,7 +58,8 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install e57 --find-links dist --force-reinstall
+          pip install "numpy>=2,<3"
+          pip install e57 --no-index --find-links dist --force-reinstall --no-deps
           pip install pytest
           pytest
       - name: pytest
@@ -76,7 +77,8 @@ jobs:
             pip3 install -U pip pytest
           run: |
             set -e
-            pip3 install e57 --find-links dist --force-reinstall
+            pip3 install "numpy>=2,<3"
+            pip3 install e57 --no-index --find-links dist --force-reinstall --no-deps
             pytest
 
   musllinux:
@@ -125,7 +127,8 @@ jobs:
             python3 -m virtualenv .venv
             source .venv/bin/activate
             pip install pytest
-            pip install e57 --find-links dist --force-reinstall
+            pip install "numpy>=2,<3"
+            pip install e57 --no-index --find-links dist --force-reinstall --no-deps
             pytest
 
   windows:
@@ -163,7 +166,8 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/Scripts/activate
-          pip install e57 --find-links dist --force-reinstall
+          pip install "numpy>=2,<3"
+          pip install e57 --no-index --find-links dist --force-reinstall --no-deps
           pip install pytest
           pytest
 
@@ -199,7 +203,8 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install e57 --find-links dist --force-reinstall
+          pip install "numpy>=2,<3"
+          pip install e57 --no-index --find-links dist --force-reinstall --no-deps
           pip install pytest
           pytest
 
