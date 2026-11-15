@@ -1,10 +1,20 @@
-"""Generate testdata/invalidPoints.e57 (requires pye57: `pip install pye57`).
+# /// script
+# requires-python = ">=3.12"  # numpy 2.5 needs 3.12+
+# dependencies = [
+#     "pye57==0.4.19",
+#     "numpy==2.5.4",
+# ]
+# ///
+"""Generate testdata/invalidPoints.e57 (dependencies are pinned in the inline
+script metadata above, PEP 723).
 
 Two scans with cartesian coordinates, 8-bit colour, float intensity and a
 cartesianInvalidState field. Every third point is marked invalid. The second
 scan is larger than the first and has a non-identity pose.
 
-    python testdata/generate_invalid_points.py
+    uv run testdata/generate_invalid_points.py
+
+or install the pinned versions and run it with python.
 """
 
 from pathlib import Path
