@@ -55,8 +55,6 @@ jobs:
           python-version: 3.14
       - name: Build wheels
         uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         with:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
@@ -69,8 +67,6 @@ jobs:
           path: dist
       - name: pytest
         if: ${{ startsWith(matrix.platform.target, 'x86_64') }}
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         shell: bash
         run: |
           set -e
@@ -83,20 +79,20 @@ jobs:
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
         uses: uraimo/run-on-arch-action@1e2c619f81e6d8609845ea1d2f443a778df1ac68 # v3
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         with:
           arch: ${{ matrix.platform.target }}
-          distro: ubuntu22.04
+          distro: ubuntu24.04
           githubToken: ${{ github.token }}
           install: |
             apt-get update
-            apt-get install -y --no-install-recommends python3 python3-pip
-            pip3 install -U pip pytest
+            apt-get install -y --no-install-recommends python3 python3-venv
           run: |
             set -e
-            pip3 install "numpy>=2,<3"
-            pip3 install e57 --no-index --find-links dist --force-reinstall --no-deps
+            python3 -m venv .venv
+            . .venv/bin/activate
+            pip install -U pip pytest
+            pip install "numpy>=2,<3"
+            pip install e57 --no-index --find-links dist --force-reinstall --no-deps
             pytest
 
   musllinux:
@@ -119,8 +115,6 @@ jobs:
           python-version: 3.14
       - name: Build wheels
         uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         with:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
@@ -134,8 +128,6 @@ jobs:
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') }}
         uses: uraimo/run-on-arch-action@1e2c619f81e6d8609845ea1d2f443a778df1ac68 # v3
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         with:
           arch: ${{ matrix.platform.target }}
           distro: alpine_latest
@@ -166,12 +158,15 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
-          python-version: 3.14
+          python-version: |
+            3.11
+            3.12
+            3.13
+            3.14
+            3.15
           architecture: ${{ matrix.platform.target }}
       - name: Build wheels
         uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         with:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
@@ -206,11 +201,14 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
-          python-version: 3.14
+          python-version: |
+            3.11
+            3.12
+            3.13
+            3.14
+            3.15
       - name: Build wheels
         uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         with:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
@@ -221,8 +219,6 @@ jobs:
           name: wheels-macos-${{ matrix.platform.target }}
           path: dist
       - name: pytest
-        env:
-          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
         run: |
           set -e
           python3 -m venv .venv
@@ -237,7 +233,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
