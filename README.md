@@ -12,6 +12,7 @@ This python library wraps the [rust e57 library](https://github.com/cry-inc/e57)
 - [x] Read e57 point coordinates to numpy array - see `read_points` method.
 - [x] Read color field to numpy array.
 - [x] Read intensity to numpy array.
+- [x] Type hints: ships `e57.pyi` stubs with dtypes and shapes.
 - [ ] Read other fields to numpy array.
 - [ ] Write to e57 (format ?)
 
