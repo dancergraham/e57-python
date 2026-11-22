@@ -42,7 +42,9 @@ jobs:
         platform:
           - runner: ubuntu-latest
             target: x86_64
-          - runner: ubuntu-latest
+          # DNS fails inside the i686 manylinux container on the ubuntu 26.04
+          # runner image (maturin-action's libatomic install can't reach yum).
+          - runner: ubuntu-24.04
             target: x86
             # rust-numpy rejects free-threaded 3.14t on 32-bit targets, so
             # list interpreters explicitly instead of --find-interpreter.
