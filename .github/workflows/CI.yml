@@ -288,7 +288,7 @@ jobs:
       - name: Install wheel and mypy
         run: |
           uv pip install e57 --no-index --find-links dist --no-deps
-          uv pip install "numpy>=2,<3" mypy
+          uv pip install "numpy>=2,<3" mypy==2.4.1
       - name: Check e57.pyi against the compiled module
         run: python -m mypy.stubtest e57 --allowlist stubtest-allowlist.txt
 
