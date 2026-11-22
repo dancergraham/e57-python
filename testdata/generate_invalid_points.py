@@ -45,7 +45,12 @@ def main():
     f.write_scan_raw(scan(30, 0.0), name="scan0")
     # 90 degrees about z, then translate by (10, 0, 0)
     q = np.array([np.cos(np.pi / 4), 0.0, 0.0, np.sin(np.pi / 4)])
-    f.write_scan_raw(scan(60, 100.0), name="scan1", rotation=q, translation=np.array([10.0, 0.0, 0.0]))
+    f.write_scan_raw(
+        scan(60, 100.0),
+        name="scan1",
+        rotation=q,
+        translation=np.array([10.0, 0.0, 0.0]),
+    )
     f.close()
     print(f"wrote {OUT}")
 
