@@ -290,6 +290,20 @@ jobs:
       - name: Check e57.pyi against the compiled module
         run: python -m mypy.stubtest e57 --allowlist stubtest-allowlist.txt
 
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: false
+      - name: ruff check
+        run: uvx ruff@0.17.3 check --output-format=github .
+      - name: ruff format
+        run: uvx ruff@0.17.3 format --check .
+
   sdist:
     runs-on: ubuntu-latest
     steps:
@@ -311,7 +325,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
-    needs: [lint, zizmor, linux, musllinux, windows, macos, sdist, pytest, stubtest]
+    needs: [lint, zizmor, ruff, linux, musllinux, windows, macos, sdist, pytest, stubtest]
     permissions:
       # Use to sign the release artifacts
       id-token: write

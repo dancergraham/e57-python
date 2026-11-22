@@ -1,6 +1,7 @@
-import e57
 import numpy as np
 import pytest
+
+import e57
 
 
 def test_raw_xml():
