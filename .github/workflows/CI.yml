@@ -22,10 +22,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: 3.14
+          persist-credentials: false
       - name: Install Rust toolchain
         run: |
           rustup toolchain install stable --profile minimal --component rustfmt,clippy
@@ -34,6 +33,17 @@ jobs:
         run: cargo fmt --all --check
       - name: cargo clippy
         run: cargo clippy --all-targets -- -D warnings
+
+  zizmor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: zizmor
+        uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
+        with:
+          advanced-security: false
 
   linux:
     runs-on: ${{ matrix.platform.runner }}
@@ -299,7 +309,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
-    needs: [lint, linux, musllinux, windows, macos, sdist]
+    needs: [lint, zizmor, linux, musllinux, windows, macos, sdist]
     permissions:
       # Use to sign the release artifacts
       id-token: write
