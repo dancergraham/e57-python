@@ -26,8 +26,12 @@ classifiers = [
 [project.optional-dependencies]
 test = [
     'pytest>=9,<10',
-    'pytest-cov>=5,<8',
 ]
+
+[tool.ruff.lint]
+extend-select = ["I", "PYI", "NPY"]
+# e57.pyi stubs a compiled module, so its docstrings are what IDEs show.
+per-file-ignores = { "*.pyi" = ["PYI021"] }
 
 [project.urls]
 repository = "https://github.com/dancergraham/e57-python"

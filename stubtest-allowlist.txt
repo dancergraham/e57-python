@@ -1,0 +1,3 @@
+# Compiled extension module; its public names are re-exported by and
+# checked against the e57 package stub.
+e57.e57
