@@ -5,22 +5,39 @@ build-backend = "maturin"
 [project]
 name = "e57"
 dynamic = ["version"]
-dependencies = [
-    'numpy>=2,<3',
-]
-description = "Read e57 files to Python. E57 is a compact, non-proprietary point cloud format that's defined by the ASTM E2807 standard.  This format is widely adopted by 3D design applications."
+description = "Read E57 point cloud files into NumPy arrays, powered by Rust."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Graham Knapp", email = "graham.knapp@gmail.com" }
 ]
 requires-python = ">=3.11"
-keywords = ["pointcloud", "e57", "lidar"]
+dependencies = [
+    'numpy>=2,<3',
+]
+keywords = ["pointcloud", "point-cloud", "e57", "lidar", "laser-scanning", "astm-e2807"]
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
     "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Programming Language :: Python :: Free Threading :: 2 - Beta",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
-    "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License",
     "Topic :: File Formats",
+    "Topic :: Multimedia :: Graphics :: 3D Modeling",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Typing :: Typed",
 ]
 
 [project.optional-dependencies]
@@ -34,7 +51,9 @@ extend-select = ["I", "PYI", "NPY"]
 per-file-ignores = { "*.pyi" = ["PYI021"] }
 
 [project.urls]
-repository = "https://github.com/dancergraham/e57-python"
+Repository = "https://github.com/dancergraham/e57-python"
+Issues = "https://github.com/dancergraham/e57-python/issues"
+Changelog = "https://github.com/dancergraham/e57-python/releases"
 
 
 [tool.maturin]
