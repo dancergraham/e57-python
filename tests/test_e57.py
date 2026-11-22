@@ -39,6 +39,24 @@ def test_read_intensity():
     assert np.all(intensity <= 0.5555)
 
 
+@pytest.mark.parametrize(
+    "path", ["testdata/bunnyFloat.e57", "testdata/pipeSpherical.e57"]
+)
+def test_dtypes_and_shapes_match_stub(path):
+    pointcloud = e57.read_points(path)
+    assert pointcloud.points.dtype == np.float64
+    assert pointcloud.color.dtype == np.float32
+    assert pointcloud.intensity.dtype == np.float32
+    assert pointcloud.points.shape[1] == 3
+    assert pointcloud.color.shape[1] == 3
+    assert pointcloud.intensity.shape[1] == 1
+
+
+def test_e57_not_constructible():
+    with pytest.raises(TypeError):
+        e57.E57()
+
+
 def test_no_rgb_intensity():
     pointcloud = e57.read_points(r"testdata/bunnyFloat.e57")
     intensity = pointcloud.intensity

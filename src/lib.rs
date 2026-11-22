@@ -6,17 +6,30 @@ use numpy::ndarray::Array2;
 use numpy::{IntoPyArray, PyArray2};
 use pyo3::prelude::*;
 
+// Keep these docs in sync with e57.pyi.
+/// Point data read by read_points. Not constructible directly.
 #[pyclass]
 pub struct E57 {
+    /// Cartesian coordinates of the valid points, shape (n, 3).
     #[pyo3(get)]
     pub points: Py<PyArray2<f64>>,
+    /// RGB colour in [0, 1], shape (n, 3).
+    ///
+    /// Scans without colour but with intensity get greyscale from intensity.
+    /// Shape (0, 3) if any scan has neither.
     #[pyo3(get)]
     pub color: Py<PyArray2<f32>>,
+    /// Intensity, shape (n, 1). Shape (0, 1) if any scan lacks it.
     #[pyo3(get)]
     pub intensity: Py<PyArray2<f32>>,
 }
 
 /// Extracts the xml contents from an e57 file.
+///
+/// Raises:
+///     OSError: The file can't be opened.
+///     RuntimeError: The file isn't a readable E57 file.
+///     UnicodeDecodeError: The XML section isn't valid UTF-8.
 #[pyfunction]
 fn raw_xml(filepath: &str) -> PyResult<String> {
     let file = File::open(filepath)?;
@@ -35,6 +48,9 @@ fn raw_xml(filepath: &str) -> PyResult<String> {
 }
 
 /// Extracts the point data from an e57 file.
+///
+/// Raises:
+///     RuntimeError: The file can't be opened or isn't a readable E57 file.
 #[pyfunction]
 unsafe fn read_points(py: Python<'_>, filepath: &str) -> PyResult<E57> {
     let file = E57Reader::from_file(filepath);
